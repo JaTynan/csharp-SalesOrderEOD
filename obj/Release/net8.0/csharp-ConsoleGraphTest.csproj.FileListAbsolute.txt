@@ -57,3 +57,4 @@ C:\Users\JamesTynan\OneDrive - Billson's Beverages\Development\csharpConsoleGrap
 C:\Users\JamesTynan\OneDrive - Billson's Beverages\Development\csharpConsoleGraphTest\obj\Release\net8.0\ref\csharp-ConsoleGraphTest.dll
 C:\Users\JamesTynan\OneDrive - Billson's Beverages\Development\csharpConsoleGraphTest\bin\Release\net8.0\appsettings.json
 C:\Users\JamesTynan\OneDrive - Billson's Beverages\Development\csharpConsoleGraphTest\bin\Release\net8.0\Microsoft.Extensions.Configuration.Binder.dll
+C:\Users\JamesTynan\OneDrive - Billson's Beverages\Development\csharpConsoleGraphTest\obj\Release\net8.0\csharp-ConsoleGraphTest.sourcelink.json

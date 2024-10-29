@@ -137,7 +137,7 @@ namespace csharpConsolegraphtest
             {
                 // Get the current date in UTC, then format it.
                 DateTime todayLocal = DateTime.UtcNow.ToLocalTime();
-                todayLocal = todayLocal.Date; // strip out the time component and get start of day (midnight).
+                todayLocal = todayLocal.Date.AddDays(0); // strip out the time component and get start of day (midnight).
                 string todayStartLocal = todayLocal.ToString("yyyy-MM-ddTHH:mm:ssZ");
                 Console.WriteLine($"Today Start Local: {todayStartLocal}");
                 

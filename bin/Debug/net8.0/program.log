@@ -1,5 +1,4 @@
-Program Started...
-Today Start Local: 2024-10-28T00:00:00Z
-Found message: EOD Summary BILLSONS Report 28/10/2024
-Downloading CSV attachment: EOD_SUMMARY_BILLSONS_28-10-2024-043003.csv
-Attachment saved to: C:\Users\JamesTynan\OneDrive - Billson's Beverages\Development\csharpConsoleGraphTest\bin\Debug\net8.0\EOD_SUMMARY_BILLSONS_28-10-2024-043003.csv
+Program Started... 
+
+Log file path: C:\Users\JamesTynan\OneDrive - Billson's Beverages\Development\csharpConsoleGraphTest\bin\Debug\net8.0\program.log
+Configuration file path: C:\Users\JamesTynan\OneDrive - Billson's Beverages\Development\csharpConsoleGraphTest\bin\Debug\net8.0\appsettings.json

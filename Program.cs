@@ -16,8 +16,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace csharpConsolegraphtest
@@ -27,8 +29,9 @@ namespace csharpConsolegraphtest
         static async Task Main(string[] args)
         {
             // Set up for logging and loading configurations
+            string configurationFilePath = Directory.GetCurrentDirectory();
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory()) // Assuming the file is in the same folder as the executable
+                .SetBasePath(configurationFilePath) // Assuming the file is in the same folder as the executable
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             Configuration = builder.Build();
             string logFileName = Configuration["Other:LogFileName"];
@@ -39,19 +42,24 @@ namespace csharpConsolegraphtest
             {
                 logFile.AutoFlush = true;
                 Console.SetOut(logFile);
-                Console.WriteLine("Program Started...");
+                Console.WriteLine("Program Started... \n");
+                Console.WriteLine($"Log file path: {logFilePath}");
+                Console.WriteLine($"Configuration file path: {configurationFilePath}\\appsettings.json");
 
                 // Step 1. Set up the configuration to read the appsettings.json file then read in the config
                 var graphApiConfig = new GraphAPIConfig();
                 Configuration.GetSection("GraphAPI").Bind(graphApiConfig);
+                PrintPropertiesWithObfuscation(graphApiConfig);
                 ValidateConfig(graphApiConfig);
 
                 var unleashedConfig = new UnleashedConfig();
                 Configuration.GetSection("Unleashed").Bind(unleashedConfig);
+                PrintPropertiesWithObfuscation(unleashedConfig);
                 ValidateConfig(unleashedConfig);
 
                 var emailConfig = new EmailConfig();
                 Configuration.GetSection("Email").Bind(emailConfig);
+                PrintPropertiesWithObfuscation(emailConfig);
                 ValidateConfig(emailConfig);
 
                 // Create a credential object using ClientSecretCredential
@@ -74,27 +82,34 @@ namespace csharpConsolegraphtest
                         .Select(csvOrder => new CsvRecordUpload(csvOrder))
                         .ToList();
 
-                    // Step 4. Retrieve "3pl-to-pick" orders from Unleashed
+                    // Step 4. Retrieve "3PL-To Pick" orders from Unleashed
                     var unleashedOrders = await GetSalesOrdersWithStatus(unleashedConfig);
 
                     if (unleashedOrders == null)
                     {
-                        Console.WriteLine("Failed to retrieve Unleashed orders.");
+                        Console.WriteLine($"Failed to retrieve any Unleashed orders of status {unleashedConfig.OrderSearchStatus}.");
                         return;
+                    }
+                    Console.WriteLine($"\nFound {unleashedOrders.Count} Unleashed orders with status {unleashedConfig.OrderSearchStatus}, beginning matching.");
+                    foreach (var unleashedOrder in unleashedOrders)
+                    {
+                        Console.WriteLine($"Customer: {unleashedOrder.Customer.CustomerName}, Order: {unleashedOrder.OrderNumber}.");
                     }
 
                     // Step 5. Cross-reference CSV orders with Unleashed orders and update status
                     foreach (var salesOrderUpload in salesOrdersUpload)
                     {
+                        Console.WriteLine($"\nLooking for matching order from email {salesOrderUpload.CustomerOrderNumber}.");
                         var matchingOrder = unleashedOrders.FirstOrDefault(
                             uOrder => uOrder.OrderNumber == salesOrderUpload.SalesOrder);
 
                         if (matchingOrder != null)
                         {
                             // If a match is found, update the order information and status
+                            Console.WriteLine($"Attempting to update order {salesOrderUpload.CustomerOrderNumber}.");
                             salesOrderUpload.OrderDate = matchingOrder.OrderDate;
                             salesOrderUpload.OrderTotal = matchingOrder.SalesOrderLines.Sum(line => line.LineTotal);
-                            salesOrderUpload.UploadStatus = "Found in Unleashed.";
+                            salesOrderUpload.UploadStatus = "Matching order found in Unleashed.";
 
                             // Step 5. Update order status using the matching order
                             bool success = await UpdateSalesOrderStatusAsync(matchingOrder, unleashedConfig, salesOrderUpload.ConsignmentNumber);
@@ -112,20 +127,19 @@ namespace csharpConsolegraphtest
                         }
                         else 
                         {
-                            salesOrderUpload.UploadStatus = "Failed to find order in Unleashed.";
+                            salesOrderUpload.UploadStatus = "Failed to find matching order in Unleashed.";
                             Console.WriteLine($"No matching '{unleashedConfig.OrderSearchStatus}' Unleashed order found for CSV order: {salesOrderUpload.SalesOrder}");
                         }
                     }
 
-                    // Step 7. Recheck the order statuses and send email report (implement email logic here)
-                    // Example call for sending email (needs actual email logic):
+                    // Step 7. Recheck the order statuses and send email report
                     await SendStatusReportEmail(graphClient, salesOrdersUpload, emailConfig);
                 }
                 else
                 {
                     Console.WriteLine("No CSV file was downloaded.");
                 }
-                Console.WriteLine("Program completed...");
+                Console.WriteLine("\nProgram completed...");
                 logFile.Close();
             }       
         }
@@ -137,7 +151,7 @@ namespace csharpConsolegraphtest
             {
                 // Get the current date in UTC, then format it.
                 DateTime todayLocal = DateTime.UtcNow.ToLocalTime();
-                todayLocal = todayLocal.Date.AddDays(0); // strip out the time component and get start of day (midnight).
+                todayLocal = todayLocal.Date.AddDays(emailConfig.SearchEmailDateOffset); // strip out the time component and get start of day (midnight).
                 string todayStartLocal = todayLocal.ToString("yyyy-MM-ddTHH:mm:ssZ");
                 Console.WriteLine($"Today Start Local: {todayStartLocal}");
                 
@@ -152,6 +166,7 @@ namespace csharpConsolegraphtest
                     queryParametersFilter += $" and contains(subject, '{emailConfig.SearchEmailSubject}')";
                 }
 
+                Console.WriteLine($"Searching for emails in inbox {emailConfig.SearchEmailInbox}, with parameters: \n{queryParametersFilter}");
                 // Get the signed-in user's email messages.
                 var messages = await graphClient.Users[emailConfig.SearchEmailInbox]
                     .Messages
@@ -203,19 +218,20 @@ namespace csharpConsolegraphtest
                         }
                         else
                         {
-                            Console.WriteLine("No attachments found in the email.");
+                            Console.WriteLine($"No attachments found in the email inbox of {emailConfig.SearchEmailInbox}.");
                         }
                     }
                 }
                 else
                 {
-                    Console.WriteLine("No messages found with the specificied subject and date.");
+                    Console.WriteLine($"No messages found with the specificied subject and date.");
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error retrieving emails: {ex.Message}");
             }
+            Console.WriteLine("\n");
             return null;
         }
 
@@ -254,6 +270,7 @@ namespace csharpConsolegraphtest
             var client = new RestClient($"{unleashedConfig.ApiUrl}?{apiQueryString}");
             var request = new RestRequest();
             request.Method = Method.Get;
+            Console.WriteLine($"Unleashed API Endpoint: {client.ToString}");
 
             // Add the required headers
             request.AddHeader("Content-Type", unleashedConfig.ContentType);
@@ -261,6 +278,7 @@ namespace csharpConsolegraphtest
             request.AddHeader("api-auth-id", unleashedConfig.ApiId);
             request.AddHeader("api-auth-signature", signature);
             request.AddHeader("client-type", unleashedConfig.ClientType);
+            PrintHeaders(request);
 
             try
             {
@@ -321,7 +339,7 @@ namespace csharpConsolegraphtest
             request.AddHeader("api-auth-id", unleashedConfig.ApiId);
             request.AddHeader("api-auth-signature", signature);
             request.AddHeader("client-type", unleashedConfig.ClientType);
-
+            PrintHeaders(request);
             // Add the JSON payload to the request
             request.AddJsonBody(uploadSalesOrder);
 
@@ -374,7 +392,7 @@ namespace csharpConsolegraphtest
             // Prepare the reduced sales order with the necessary fields for the PUT request
             var updatedSalesOrder = new
             {
-                Comments = $"{existingOrder.Comments}  Consignment Number: {consignmentNumber}",  // Add consignment number to comments
+                Comments = $"{existingOrder.Comments} Consignment Number: {consignmentNumber}",  // Add consignment number to comments
                 CustomerRef = existingOrder.CustomerRef,
                 DeliveryCity = existingOrder.DeliveryCity,
                 DeliveryCountry = existingOrder.DeliveryCountry,
@@ -575,9 +593,76 @@ namespace csharpConsolegraphtest
             }
         }
 
+        public static void PrintPropertiesWithObfuscation<T>(T obj)
+        {
+            string typeName = obj?.GetType().Name ?? "Object";
+            Console.WriteLine($"--- Debug Information for {typeName} ---");
+
+            foreach (var property in obj.GetType().GetProperties())
+            {
+                var value = property.GetValue(obj);
+
+                // If the value is a string, check if it looks like sensitive data
+                if (value is string strValue && LooksLikeSensitiveData(strValue))
+                {
+                    // Display only the first three characters with obfuscation
+                    Console.WriteLine($"{property.Name}: {ObfuscateSensitiveData(strValue)}");
+                }
+                else
+                {
+                    Console.WriteLine($"{property.Name}: {value}");
+                }
+            }
+
+            Console.WriteLine("--- End of Debug Information ---\n");
+        }
+
+        // Helper method to determine if a string looks like sensitive data
+        private static bool LooksLikeSensitiveData(string value)
+        {
+            // Regex patterns for typical sensitive data formats
+            var patterns = new[]
+            {
+                @"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$", // UUID format
+                @"^[a-zA-Z0-9-_~]{20,}$", // Long alphanumeric string with special characters for API keys
+                @"^[a-zA-Z0-9+\/=]{40,}$", // Base64-like pattern (longer strings with +, /, =)
+                @"[A-Za-z0-9-_~]{8,}=[A-Za-z0-9-_~]{8,}=[A-Za-z0-9-_~]{8,}", // Pattern with equal signs
+                @"[a-zA-Z0-9]{32,}", // Generic pattern for long strings with letters and numbers
+            };
+
+            // Return true if any pattern matches
+            return patterns.Any(pattern => Regex.IsMatch(value, pattern));
+        }
+
+        // Helper method to obfuscate the sensitive data
+        private static string ObfuscateSensitiveData(string value)
+        {
+            // If it matches UUID format, obfuscate with only the first three characters shown
+            if (Regex.IsMatch(value, @"^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"))
+            {
+                return $"{value.Substring(0, 3)}-****-****-****-************";
+            }
+            
+            // Default obfuscation: only show first three characters with "****" if it's a general sensitive string
+            return $"{value.Substring(0, 3)}{new string('*', value.Length-3)}";
+        }
+
+        public static void PrintHeaders(RestRequest request)
+        {
+            Console.WriteLine("\n---- Request Headers ----");
+            
+            foreach (var param in request.Parameters.Where(p => p.Type == ParameterType.HttpHeader))
+            {
+                var obfuscatedValue = ObfuscateSensitiveData(param.Value.ToString());
+                Console.WriteLine($"{param.Name}: {obfuscatedValue}");
+            }
+            
+            Console.WriteLine("-------------------------");
+        }
+
         public class CsvRecordUpload: CsvRecord
         {
-            public string? UploadStatus { get; set; } = "Not order found matching in Unleashed.";
+            public string? UploadStatus { get; set; } = "No order found matching in Unleashed.";
             public string? OrderDate { get; set; }
             public decimal? OrderTotal { get; set; }
 
@@ -877,6 +962,7 @@ namespace csharpConsolegraphtest
             public string ?SearchEmailSender { get; set; }
             public string ?SearchEmailSubject { get; set; }
             public string SearchEmailInbox { get; set; }
+            public double SearchEmailDateOffset { get; set; }
             public string SenderEmail { get; set; }
             public List<string> Recipients { get; set; }
 

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\JamesTynan\\OneDrive - Billson's Beverages\\Development\\csharpConsoleGraphTest\\csharp-ConsoleGraphTest.csproj": {}
+    "c:\\Users\\JamesTynan\\OneDrive - Billson's Beverages\\Development\\csharpConsoleGraphTest\\csharp-ConsoleGraphTest.csproj": {}
   },
   "projects": {
-    "C:\\Users\\JamesTynan\\OneDrive - Billson's Beverages\\Development\\csharpConsoleGraphTest\\csharp-ConsoleGraphTest.csproj": {
+    "c:\\Users\\JamesTynan\\OneDrive - Billson's Beverages\\Development\\csharpConsoleGraphTest\\csharp-ConsoleGraphTest.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\JamesTynan\\OneDrive - Billson's Beverages\\Development\\csharpConsoleGraphTest\\csharp-ConsoleGraphTest.csproj",
+        "projectUniqueName": "c:\\Users\\JamesTynan\\OneDrive - Billson's Beverages\\Development\\csharpConsoleGraphTest\\csharp-ConsoleGraphTest.csproj",
         "projectName": "csharp-ConsoleGraphTest",
-        "projectPath": "C:\\Users\\JamesTynan\\OneDrive - Billson's Beverages\\Development\\csharpConsoleGraphTest\\csharp-ConsoleGraphTest.csproj",
+        "projectPath": "c:\\Users\\JamesTynan\\OneDrive - Billson's Beverages\\Development\\csharpConsoleGraphTest\\csharp-ConsoleGraphTest.csproj",
         "packagesPath": "C:\\Users\\JamesTynan\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\JamesTynan\\OneDrive - Billson's Beverages\\Development\\csharpConsoleGraphTest\\obj\\",
+        "outputPath": "c:\\Users\\JamesTynan\\OneDrive - Billson's Beverages\\Development\\csharpConsoleGraphTest\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\JamesTynan\\AppData\\Roaming\\NuGet\\NuGet.Config"

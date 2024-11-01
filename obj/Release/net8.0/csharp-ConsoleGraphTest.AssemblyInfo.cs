@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("csharp-ConsoleGraphTest")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cf8f7721886231ddf1393ec8d3f3827368a53ab6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+06d3c742ade845d8db09ae843821516392a5f39f")]
 [assembly: System.Reflection.AssemblyProductAttribute("csharp-ConsoleGraphTest")]
 [assembly: System.Reflection.AssemblyTitleAttribute("csharp-ConsoleGraphTest")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

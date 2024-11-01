@@ -1,0 +1,12 @@
+SalesOrder,CustomerOrderNumber,ShipToContact,ShipToAdd1,ShipToAdd2,ShipToAdd3,ShipToSuburb,ShipToState,ShipToPostCode,ShipToCountry,CreatedDate,PickedDate,DispatchedDate,ConsignmentNumber
+"SO-00058944","SO-00058944","Premix King - Warragul","7/17 Deborah Street","","","GOLDEN SQUARE","VIC","3555","AUSTRALIA","25/10/24","28/10/24","31/10/24","428640"
+"SO-00058986","SO-00058986","Dan Murphy's Bendigo 3622","21-35 Garsed Street","Vendor No.4114001","","BENDIGO","VIC","3550","AUSTRALIA","30/10/24","31/10/24","31/10/24","TTLB013054"
+"SO-00059023","SO-00059023","Weir Family IGA - St Arnaud","37-47 Napier St","","","ST ARNAUD","VIC","3478","AUSTRALIA","30/10/24","31/10/24","31/10/24","TTLB013055"
+"SO-00059026","SO-00059026","JMAC Investments Pty Ltd","245 Beringarra Ave","","","MALAGA","WA","6090","AUSTRALIA","30/10/24","31/10/24","31/10/24","TTLB013056"
+"SO-00059027","SO-00059027","Page Tavern","Page Tavern","6-8 Page Place","","PAGE","ACT","2614","AUSTRALIA","30/10/24","31/10/24","31/10/24","TTLB013057"
+"SO-00059028","SO-00059028","Appin Park Takeaway","69 Appin St","","","WANGARATTA","VIC","3677","AUSTRALIA","30/10/24","31/10/24","31/10/24","TTLB013052"
+"SO-00059030","SO-00059030","Sciclunas Real Food Merchants- Tooronga","Shop 15  Tooronga Village","350-354 Tooronga Rd","","GLEN IRIS","VIC","3146","AUSTRALIA","30/10/24","31/10/24","31/10/24","TTLB013053"
+"SO-00059031","SO-00059031","Wallingtons WRG","370-374 Grubb Road","","","WALLINGTON","VIC","3222","AUSTRALIA","30/10/24","31/10/24","31/10/24","TTLB013058"
+"SO-00059032","SO-00059032","Champions IGA Strathfieldsaye","939 Wellington Road","","","STRATHFIELDSAYE","VIC","3551","AUSTRALIA","30/10/24","31/10/24","31/10/24","TTLB013051"
+"SO-00059033","SO-00059033","Exflo Hospitality Supplies","59 Bennu Court","","","ALBURY","NSW","2640","AUSTRALIA","30/10/24","31/10/24","31/10/24","TTLB013059"
+"TX-00014717","","Procanning","71 Lara Way","","","CAMPBERFIELD","VIC","3061","","31/10/24","31/10/24","31/10/24","429412"

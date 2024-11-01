@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "n7qCobbxbt8=",
+  "dgSpecHash": "//Tb+MXXzGc=",
   "success": true,
-  "projectFilePath": "C:\\Users\\JamesTynan\\OneDrive - Billson's Beverages\\Development\\csharpConsoleGraphTest\\csharp-ConsoleGraphTest.csproj",
+  "projectFilePath": "c:\\Users\\JamesTynan\\OneDrive - Billson's Beverages\\Development\\csharpConsoleGraphTest\\csharp-ConsoleGraphTest.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\JamesTynan\\.nuget\\packages\\azure.core\\1.44.1\\azure.core.1.44.1.nupkg.sha512",
     "C:\\Users\\JamesTynan\\.nuget\\packages\\azure.identity\\1.13.0\\azure.identity.1.13.0.nupkg.sha512",
